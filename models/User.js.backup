@@ -1,0 +1,5 @@
+module.exports = [
+    { userId: "doo", password: "123456", info: "doo" },
+    { userId: "doo82", password: "123456", info: "doo82" },
+    { userId: "doo82112", password: "123456", info: "doo82112" },
+];

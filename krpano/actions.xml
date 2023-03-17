@@ -1,0 +1,74 @@
+<krpano>
+
+    <style name='edithotspotsytle' url='skin/infoclick.png' distorted='false'
+        ondown='set(dragging, true); draghotspot();'
+        onup='set(dragging, false);'
+
+    />
+
+    <action name='draghotspot'>
+        if(dragging,
+            screentosphere(mouse.x,mouse.y,ath,atv);
+	        delayedcall(0,draghotspot());
+        );
+    </action>
+    
+    <action name='setscenexml'>
+        set(xmlstr, %1);
+        //trace(xmlstr);
+        delayedcall(0.1, loadxml(get(xmlstr), null, MERGE|KEEPVIEW, NOBLEND));
+    </action>
+
+    <action name='addhotspotassstyle'>
+        set(stylename, %1);
+        trace(stylename);
+        addhotspot(get(stylename));
+        set(hotspot[get(stylename)].style, 'edithotspotsytle');
+        set(hotspot[get(stylename)].url,skin/infoclick.png);
+        set(hotspot[get(stylename)].ath,0);
+        set(hotspot[get(stylename)].atv,0);
+        set(hotspot[get(stylename)].scale,0.7);
+        set(hotspot[get(stylename)].zoom,true);
+        set(hotspot[get(stylename)].linkedscene, 'scene_01');
+        txtadd(onclickname, 'savehotspot(',get(hotspot[get(stylename)].name),')');
+        set(hotspot[get(stylename)].onclick, get(onclickname) );
+        set(hotspot[get(stylename)].ondown, set(dragging, true);draghotspot(););
+        set(hotspot[get(stylename)].onup, set(dragging, false););
+
+
+    </action>
+
+    <action name='savehotspot'>
+        set(spotname, %1);
+        trace(get(spotname));
+        sendsavehotspotdata(get(hotspot[get(spotname)].name),get(hotspot[get(spotname)].url),get(hotspot[get(spotname)].ath),get(hotspot[get(spotname)].atv),get(hotspot[get(spotname)].scale),get(hotspot[get(spotname)].zoom),get(hotspot[get(spotname)].onclick));
+    </action>
+
+    <action name="sendsavehotspotdata" type="Javascript">
+	<![CDATA[
+		var name = args[1];
+		var url = args[2];
+        var ath = args[3];
+        var atv = args[4];
+        var scale = args[5];
+        var zoom = args[6]
+        var onclick = args[7];
+
+		doneedithotspot(name, url, ath, atv, scale, zoom, onclick);
+
+	]]>
+	</action>
+
+    <action name="getcurrentxmlcontent">
+        trace('===============');
+        trace(xml.content);
+        trace('===============');
+    </action>
+
+    <action name="opencontrollayer" type="Javascript">
+    <![CDATA[
+		var name = args[1];
+		opencontrollayer(name);
+	]]>
+    </action>
+</krpano>

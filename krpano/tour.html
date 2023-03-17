@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Active360 테스트 페이지</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="mobile-web-app-capable" content="yes" />
+	<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+	<meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
+    <link rel="stylesheet" href="style.css">
+    <style>
+		@font-face {
+			font-family: notosans;
+			src: url(fonts/notosanskrblack.otf);
+		}
+
+		@font-face {
+			font-family: notosansnormal;
+			src: url(fonts/notosanskrnormal.otf);
+		}
+	</style>
+</head>
+<body>
+<script src="tour.js"></script>
+<script src="main.js"></script>
+<script type="text/javascript" src="plugins/xml2json.js"></script>
+
+<!--script src="https://cdn.jsdelivr.net/npm/to-xml/dist/to-xml.min.js"></script-->
+<div id="maindiv" class="maindiv">
+    <nav>
+        Active360 테스트 페이지 입니다.
+        <div id="input_group" class="in-line">
+            <input id="panoidinput" type="text" value="" placeholder="panorama ID">
+            <input type="button" value="불러오기" onclick="getPanoxml()">
+        </div>
+        <div class="in-line">
+            <input type="button" value="핫스팟추가" onclick="addhotspot()">
+            <input type="button" value="저장하기" onclick="callsavexml()">
+        </div>
+        
+    </nav>
+    <div id="krpanoMain" class="panorama">
+        <noscript><table style="width:100%;height:100%;"><tr style="vertical-align:middle;"><td><div style="text-align:center;">ERROR:<br/><br/>Javascript not activated<br/><br/></div></td></tr></table></noscript>
+        <script>
+            embedpano({ html5: "only", basepath: "./", id: "krpanoMainViewer", target: "krpanoMain", xml: "tour.xml", vars: { syncside: "left", syncviewer: "krpanoMainViewer" }, passQueryParameters: true, onready: krpano_onready_callback });
+        </script>
+    </div>
+</div>
+</body>
+</html>
