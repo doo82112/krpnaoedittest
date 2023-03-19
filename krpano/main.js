@@ -236,7 +236,7 @@ function callsavexml() {
             krpano.call("setscenexml(" + x_xml + ");");
         }
         console.log(panoid);
-        fetch(`http://127.0.0.1:3000/xmldatas/update`, {
+        fetch(`http://localhost:3000/xmldatas/update`, {
             method: "POST",
             headers: {
                 "Content-type": "application/json",
