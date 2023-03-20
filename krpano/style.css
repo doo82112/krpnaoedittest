@@ -49,11 +49,17 @@ nav {
 	right: 100px;
 	position:relative;
 }
-
-.in-line{
-	width:350px;
+.in-line-buttons{
+	width:600px;
 	height:52px;
 	margin-top: 2px;
+
+  }
+.in-line{
+	width:350;
+	height:52px;
+	margin-top: 2px;
+
   }
   input{
 	margin:0;

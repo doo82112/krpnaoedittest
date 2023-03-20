@@ -30,8 +30,9 @@ function getPanoxml() {
     }
     console.log(panoid);
 
+    //https://port-0-krpnaoedittest-p8xrq2mlfci9uc5.sel3.cloudtype.app
 
-    fetch(`https://port-0-krpnaoedittest-p8xrq2mlfci9uc5.sel3.cloudtype.app/xmldatas/${panoid}`)
+    fetch(`http://127.0.0.1:3000/xmldatas/${panoid}`)
         .then((response) => {
             if (response.ok) {
 
@@ -127,6 +128,7 @@ function addhotspot() {
             krpano.set("layer[" + oklayername + "].onclick", function (hs) {
 
                 doneedithotspot(
+                    krpano.get("scene[get(xml.scene)].index"),
                     hs_name,
                     krpano.get("hotspot[" + hs_name + "].url"),
                     krpano.get("hotspot[" + hs_name + "].ath"),
@@ -179,6 +181,7 @@ function opencontrollayer(hs_name) {
             krpano.set("layer[" + oklayername + "].onclick", function (hs) {
 
                 doneedithotspot(
+                    krpano.get("scene[get(xml.scene)].index"),
                     hs_name,
                     krpano.get("hotspot[" + hs_name + "].url"),
                     krpano.get("hotspot[" + hs_name + "].ath"),
@@ -205,7 +208,7 @@ function opencontrollayer(hs_name) {
     }
 }
 
-function removehotspotobject(hs_name) {
+function removehotspotobject(scene_index, hs_name) {
     if (krpanojsobject) {
         var sceneobject = krpanojsobject['scene'][0];
         var hotspotobjects = sceneobject['hotspot'];
@@ -236,7 +239,7 @@ function callsavexml() {
             krpano.call("setscenexml(" + x_xml + ");");
         }
         console.log(panoid);
-        fetch(`https://port-0-krpnaoedittest-p8xrq2mlfci9uc5.sel3.cloudtype.app/xmldatas/update`, {
+        fetch(`http://127.0.0.1:3000/xmldatas/update`, {
             method: "POST",
             headers: {
                 "Content-type": "application/json",
@@ -250,15 +253,38 @@ function callsavexml() {
 
 }
 
-function doneedithotspot(name, url, ath, atv, scale, zoom, onclick) {
-    console.log('name: ' + name + ' url: ' + url + ' onclick: ' + onclick);
+function setstartscene() {
+    if (krpano) {
+        if (krpanojsobject) {
+            var scene_index = krpano.get("scene[get(xml.scene)].index");
+            krpanojsobject['scene'].forEach(element => {
+                element._autoload = false;
+            });
+            krpanojsobject['scene'][scene_index]._autoload = true;
+        }
+    }
+
+}
+
+function doneedithotspot(scene_index, name, url, ath, atv, scale, zoom, onclick) {
+    console.log('scene_index: ' + scene_index + ' name: ' + name + ' url: ' + url + ' onclick: ' + onclick);
     krpano.set("hotspot[" + name + "].onclick", "opencontrollayer(" + name + ")");
     onclick = krpano.get("hotspot[" + name + "].onclick");
     console.log(onclick);
     if (krpanojsobject) {
+        var sceneobject = krpanojsobject['scene'][scene_index];
+        //console.log(krpanojsobject['scene']);
+        krpanojsobject['scene'].forEach(element => {
+            element._autoload = false;
+            console.log(element.autoload);
 
-        console.log(krpanojsobject['scene']);
-        var sceneobject = krpanojsobject['scene'][0];
+        });
+
+
+        krpanojsobject['scene'][scene_index]._autoload = true;
+
+
+
         var hotspotobjects = sceneobject['hotspot'];
 
         var hotspot_obj = { _name: name, _url: url, _ath: ath, _atv: atv, _scale: scale, _zoom: zoom, _onclick: onclick };
