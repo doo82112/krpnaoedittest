@@ -31,8 +31,8 @@ function getPanoxml() {
     console.log(panoid);
 
     //https://port-0-krpnaoedittest-p8xrq2mlfci9uc5.sel3.cloudtype.app
-
-    fetch(`https://port-0-krpnaoedittest-p8xrq2mlfci9uc5.sel3.cloudtype.app/xmldatas/${panoid}`)
+    //http://localhost:3000
+    fetch(`http://localhost:3000/xmldatas/${panoid}`)
         .then((response) => {
             if (response.ok) {
 
@@ -124,7 +124,9 @@ function addhotspot() {
 
         if (krpano.get("device.html5")) {
             // for HTML5 it's possible to assign JS functions directly to krpano events
-            //krpano.set("hotspot[" + hs_name + "].onclick", function (hs) {
+            krpano.set("hotspot[" + hs_name + "].onclick", function (hs) {
+                opensceneselect(hs_name);
+            }.bind(null, hs_name));
             krpano.set("layer[" + oklayername + "].onclick", function (hs) {
 
                 doneedithotspot(
@@ -177,7 +179,9 @@ function opencontrollayer(hs_name) {
 
         if (krpano.get("device.html5")) {
             // for HTML5 it's possible to assign JS functions directly to krpano events
-            //krpano.set("hotspot[" + hs_name + "].onclick", function (hs) {
+            krpano.set("hotspot[" + hs_name + "].onclick", function (hs) {
+                opensceneselect(hs_name);
+            }.bind(null, hs_name));
             krpano.set("layer[" + oklayername + "].onclick", function (hs) {
 
                 doneedithotspot(
@@ -195,7 +199,8 @@ function opencontrollayer(hs_name) {
 
             krpano.set("layer[" + xlayername + "].onclick", function (hs) {
                 krpano.call("removehotspot(" + hs_name + ")");
-                removehotspotobject(hs_name);
+                var scene_index = krpano.get("scene[get(xml.scene)].index");
+                removehotspotobject(scene_index, hs_name);
             }.bind(null, hs_name));
         }
         else {
@@ -210,7 +215,7 @@ function opencontrollayer(hs_name) {
 
 function removehotspotobject(scene_index, hs_name) {
     if (krpanojsobject) {
-        var sceneobject = krpanojsobject['scene'][0];
+        var sceneobject = krpanojsobject['scene'][scene_index];
         var hotspotobjects = sceneobject['hotspot'];
         console.log(hotspotobjects);
         var selectindex = -1;
@@ -239,7 +244,7 @@ function callsavexml() {
             krpano.call("setscenexml(" + x_xml + ");");
         }
         console.log(panoid);
-        fetch(`https://port-0-krpnaoedittest-p8xrq2mlfci9uc5.sel3.cloudtype.app/xmldatas/update`, {
+        fetch(`http://localhost:3000/xmldatas/update`, {
             method: "POST",
             headers: {
                 "Content-type": "application/json",
@@ -264,6 +269,107 @@ function setstartscene() {
         }
     }
 
+}
+let mousePos = { x: undefined, y: undefined };
+window.addEventListener('mousemove', (event) => {
+    mousePos = { x: event.clientX, y: event.clientY };
+    //console.log(mousePos);
+});
+
+var body = document.querySelector("body");
+body.addEventListener('click', clickBodyEvent);
+function clickBodyEvent(event) {
+    var target = event.target;
+    var popupmenu = document.getElementById('popupmenu');
+    // 1. review_write_info 영역 이면 pass
+    if (target == event.currentTarget.querySelector(".popupmenu")) {
+        console.log('popupmenu');
+
+        return;
+    }
+    if (target == event.currentTarget.querySelector(".fileUpload")) {
+        console.log('popupmenu');
+
+        return;
+    }
+    if (target == event.currentTarget.querySelector(".previewImg")) {
+        console.log('popupmenu');
+
+        return;
+    }
+
+    if (isPopupmenu == true) {
+        console.log('outside');
+        document.getElementById('popupmenu').style.opacity = '0';
+        document.getElementById('popupmenu').style.visibility = 'hidden';
+        isPopupmenu = false;
+    }
+};
+
+var isPopupmenu = false;
+
+function opensceneselect(hs_name) {
+    var mXpos = mousePos.x - 75;
+    var mYpos = mousePos.y - 200;
+    document.getElementById('popupmenu').style.left = mXpos + 'px';
+    document.getElementById('popupmenu').style.top = mYpos + 'px';
+    document.getElementById('popupmenu').style.opacity = '1';
+    document.getElementById('popupmenu').style.visibility = 'visible';
+
+
+    setTimeout(function () {
+        isPopupmenu = true;
+    }, 1000);
+
+
+
+    var fileInput = document.getElementById('fileUpload');
+    fileInput.addEventListener('change', function () {
+        const selectedFile = [...fileInput.files];
+        const fileReader = new FileReader();
+
+        fileReader.readAsDataURL(selectedFile[0]);
+        console.log(selectedFile[0]);
+        fileReader.onload = function () {
+            const imageData = fileReader.result;
+            var previewImg = document.getElementById('previewImg');
+            previewImg.src = imageData;
+            var formData = new FormData();
+            formData.append('image', selectedFile[0]);
+            fetch(`http://localhost:3000/upload`, {
+                method: "POST",
+                cache: "no-cache",
+                body: formData
+            })
+                .then((response) => {
+                    if (response.ok) {
+                        return response.json();
+                    }
+                })
+                .then((data) => {
+                    console.log(data);
+                    var jbsplit = data.destination.split('/');
+                    var fullurl = jbsplit[jbsplit.length - 1] + '/' + data.filename;
+                    console.log(fullurl);
+                    previewImg.addEventListener('click', function () {
+                        applyimgtohotspot(hs_name, fullurl);
+                    });
+                    document.getElementById('popupmenu').style.opacity = '1';
+                    document.getElementById('popupmenu').style.visibility = 'visible';
+                    isPopupmenu = true;
+                });
+
+
+        };
+    });
+}
+
+function applyimgtohotspot(hs_name, spoturl) {
+    if (krpano) {
+
+        krpano.set("hotspot[" + hs_name + "].url", spoturl);
+        krpano.set("hotspot[" + hs_name + "].scale", 0.1);
+    }
 }
 
 function doneedithotspot(scene_index, name, url, ath, atv, scale, zoom, onclick) {
@@ -300,9 +406,6 @@ function doneedithotspot(scene_index, name, url, ath, atv, scale, zoom, onclick)
         if (!issame) {
             hotspotobjects.push(hotspot_obj);
         }
-
-
-
 
         console.log(sceneobject);
 
