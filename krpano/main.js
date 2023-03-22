@@ -32,7 +32,7 @@ function getPanoxml() {
 
     //https://port-0-krpnaoedittest-p8xrq2mlfci9uc5.sel3.cloudtype.app
     //http://localhost:3000
-    fetch(`http://localhost:3000/xmldatas/${panoid}`)
+    fetch(`https://port-0-krpnaoedittest-p8xrq2mlfci9uc5.sel3.cloudtype.app/xmldatas/${panoid}`)
         .then((response) => {
             if (response.ok) {
 
@@ -244,7 +244,7 @@ function callsavexml() {
             krpano.call("setscenexml(" + x_xml + ");");
         }
         console.log(panoid);
-        fetch(`http://localhost:3000/xmldatas/update`, {
+        fetch(`https://port-0-krpnaoedittest-p8xrq2mlfci9uc5.sel3.cloudtype.app/xmldatas/update`, {
             method: "POST",
             headers: {
                 "Content-type": "application/json",
@@ -336,7 +336,7 @@ function opensceneselect(hs_name) {
             previewImg.src = imageData;
             var formData = new FormData();
             formData.append('image', selectedFile[0]);
-            fetch(`http://localhost:3000/upload`, {
+            fetch(`https://port-0-krpnaoedittest-p8xrq2mlfci9uc5.sel3.cloudtype.app/upload`, {
                 method: "POST",
                 cache: "no-cache",
                 body: formData
